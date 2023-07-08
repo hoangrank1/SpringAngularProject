@@ -34,7 +34,12 @@ export class AppComponent {
           this.dataSubject.next(response);
           return { 
             dataState: DataState.LOADED_STATE, 
-            appData: response
+            appData: {
+              ...response, 
+              data: { 
+                servers: response.data.servers.reverse() 
+              }
+            }
           }
         }),
         startWith({ 
@@ -76,4 +81,25 @@ export class AppComponent {
         })
       );
   }
+
+  saveServer(serverForm: NgForm): void {
+    this.isLoading.next(true);
+    this.appState$ = this.serverService.save$(serverForm.value as Server)
+      .pipe(
+        map(response => {
+          this.dataSubject.next(
+            {...response, data: { servers: [response.data.server, ...this.dataSubject.value.data.servers] } }
+          );
+          document.getElementById('closeModal').click();
+          this.isLoading.next(false);
+          serverForm.resetForm({ status: this.Status.SERVER_DOWN });
+          return { dataState: DataState.LOADED_STATE, appData: this.dataSubject.value }
+        }),
+        startWith({ dataState: DataState.LOADED_STATE, appData: this.dataSubject.value }),
+        catchError((error: string) => {
+          this.isLoading.next(false);
+          return of({ dataState: DataState.ERROR_STATE, error });
+        })
+      );
+}
 }
