@@ -9,10 +9,10 @@
 
 ## 📸 Snapshots
 ### Overview
-<p> <img align="center" src="https://ibb.co/vjYBPCk"/> </p>
+<p> <img align="center" src="https://i.ibb.co/714zWxK/1.png"/> </p>
 
 ### Add New Server
-<p> <img align="center" src="https://ibb.co/f1JyGzL"/> </p>
+<p> <img align="center" src="https://i.ibb.co/FxpyqLC/2.png"/> </p>
 
 ### Report printed
-<p> <img align="center" src="https://ibb.co/85htQ3P"/> </p>
+<p> <img align="center" src="https://i.ibb.co/R05dJnQ/3.png"/> </p>
