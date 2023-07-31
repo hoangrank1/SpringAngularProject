@@ -5,10 +5,12 @@ import { NotifierService } from 'angular-notifier';
 export class NotificationService {
   private readonly notifier: NotifierService;
 
-  constructor(notifierService: NotifierService) {
+  constructor(
+    notifierService: NotifierService
+  ) {
     this.notifier = notifierService;
   }
-
+  
   onDefault(message: string): void {
     this.notifier.notify(Type.DEFAULT, message);
   }
