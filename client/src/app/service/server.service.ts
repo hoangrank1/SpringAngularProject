@@ -44,7 +44,7 @@ export class ServerService {
       catchError(this.handleError)
     );
   
-  filter$ = (status: Status, response: CustomResponse) => <Observable<CustomResponse>>
+  filter$ = (status: Status, response: CustomResponse | any) => <Observable<CustomResponse>>
   new Observable<CustomResponse>(subcriber => {
     console.log(response);
     subcriber.next(status === Status.ALL 
@@ -53,13 +53,13 @@ export class ServerService {
         message: `Servers filtered by ${status} status` 
       } : {
         ...response,
-        message: response.data.servers?.filter(server => server.status === status).length 
+        message: response.data.servers?.filter((server: { status: Status; }) => server.status === status).length 
           ? `Servers filtered by ${status === Status.SERVER_UP 
             ? 'SERVER UP' 
             : 'SERVER DOWN'} status` 
           : `No servers of ${status} found`,
         data: {
-          servers: response.data.servers?.filter(server => server.status === status)
+          servers: response.data.servers?.filter((server: { status: Status; }) => server.status === status)
         }
       }
     );

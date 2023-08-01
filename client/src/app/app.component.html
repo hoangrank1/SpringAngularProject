@@ -16,7 +16,7 @@
                         </a>
   
                         <span>
-                            <select name="status"  
+                            <select (ngModelChange)="filterServers($event)" name="status" ngModel="ALL"  
                                 class="btn btn-info" style="height: 32.91px;">
                                 <option value="ALL">ALL</option>
                                 <option value="SERVER_UP">SERVER UP</option>
@@ -49,29 +49,39 @@
                             </tr>
                         </thead>
 
-                        <tbody>
+                        <tbody *ngFor="let server of appState.appData?.data?.servers; let i = index">
                             <tr>
-                                <td> <img src="" width="40" height="40"></td>
-                                <td> ipAddress </td>
-                                <td> name </td>
-                                <td> memory </td>
-                                <td> type </td>
+                                <td> <img [src]="server.imageUrl" [alt]="server.name" width="40" height="40"></td>
+                                <td> {{ server.ipAddress }} </td>
+                                <td> {{ server.name }} </td>
+                                <td> {{ server.memory }} </td>
+                                <td> {{ server.type }} </td>
                                 <td>
-                                    <span class="badge">
-                                      
-                                    </span>
+                                    <span 
+                                        [ngClass]="[server.status === Status.SERVER_UP ? 'badge-success' : 'badge-danger']"
+                                        class="badge"
+                                    > {{ server.status }} </span>
                                 </td>
                                 <td>
-                                    <a style="cursor: pointer;">
-                                        <i class="material-icons" title="Ping server">&#xe328;</i>
-                                        <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>
+                                    <a (click)="pingServer(server.ipAddress)" style="cursor: pointer;">
+                                        <i 
+                                            *ngIf="(filterStatus$ | async) === '' || (filterStatus$ | async) !== server.ipAddress"
+                                            class="material-icons" title="Ping server"
+                                        >&#xe328;</i>
+                                        <i 
+                                            *ngIf="(filterStatus$ | async) === server.ipAddress" 
+                                            class="fa fa-spinner fa-spin" style="font-size:24px"
+                                        ></i>
                                     </a>
                                 </td>
                                 <td>
                                     <a 
-                                        class="delete" data-toggle="modal"
-                                        style="cursor: pointer;"><i class="material-icons" data-toggle="tooltip"
-                                            title="Delete">&#xE872;</i></a>
+                                        class="delete" 
+                                        data-toggle="modal"
+                                        style="cursor: pointer;"
+                                    >
+                                        <i class="material-icons" data-toggle="tooltip"title="Delete">&#xE872;</i>
+                                    </a>
                                 </td>
                         </tbody>
                     </table>
@@ -79,7 +89,7 @@
 
                 <ng-container *ngSwitchCase="DataState.ERROR_STATE">
                     <div class="alert-danger">
-                        error
+                        {{ appState.error }}
                     </div>
                 </ng-container>
             </ng-container>
@@ -91,7 +101,7 @@
   <div id="addEmployeeModal" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form #serverForm="ngForm">
+            <form #serverForm="ngForm" (ngSubmit)="saveServer(serverForm)">
                 <div class="modal-header">
                     <h4 class="modal-title">Add Server</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -139,9 +149,9 @@
 
                     <button type="submit" [disabled]="serverForm.invalid || (isLoading$ | async)"
                         class="btn btn-success">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <span >Saving...</span>
-                        <span >Add</span>
+                        <i *ngIf="isLoading$ | async" class="fas fa-spinner fa-spin"></i>
+                        <span *ngIf="isLoading$ | async">Saving...</span>
+                        <span *ngIf="!(isLoading$ | async)">Add</span>
                     </button>
                 </div>
             </form>
