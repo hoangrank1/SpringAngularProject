@@ -153,5 +153,48 @@ export class AppComponent implements OnInit {
           return of({ dataState: DataState.ERROR_STATE, error });
         })
       );
-}
+  }
+  
+  deleteServer(server: Server): void {
+    this.appState$ = this.serverService.delete$(server.id)
+      .pipe(
+        map(response => {
+          this.dataSubject.next({ 
+            ...response,
+            data: { 
+              servers: this.dataSubject.value.data.servers.filter((s: { id: number; }) => s.id !== server.id)
+            } 
+          });
+          this.notifier.onDefault(response.message);
+
+          return { 
+            dataState: DataState.LOADED_STATE, 
+            appData: this.dataSubject.value 
+          }
+        }),
+        startWith({ 
+          dataState: DataState.LOADED_STATE, 
+          appData: this.dataSubject.value 
+        }),
+        catchError((error: string) => {
+          this.notifier.onError(error);
+
+          return of({ dataState: DataState.ERROR_STATE, error });
+        })
+      );
+  }
+
+  printReport(): void {
+    this.notifier.onDefault('Report downloaded');
+    // window.print();
+    let dataType = 'application/vnd.ms-excel.sheet.macroEnabled.12';
+    let tableSelect = document.getElementById('servers');
+    let tableHtml = tableSelect?.outerHTML.replace(/ /g, '%20');
+    let downloadLink = document.createElement('a');
+    document.body.appendChild(downloadLink);
+    downloadLink.href = 'data:' + dataType + ', ' + tableHtml;
+    downloadLink.download = 'server-report.xls';
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  }
 }
